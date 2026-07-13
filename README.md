@@ -23,55 +23,81 @@ This prototype demonstrates how NVIDIA's software stack can support a practical 
 
 The embedding client sends `input_type="passage"` for document chunks and `input_type="query"` for user questions because NVIDIA's asymmetric embedding models require that distinction.
 
-## Setup
+## Run Instructions
+
+### 1. Create and activate a virtual environment
 
 ```powershell
 python -m venv venv
 venv\Scripts\activate
+```
+
+### 2. Install dependencies
+
+```powershell
 pip install -r requirements.txt
+```
+
+### 3. Configure NVIDIA API access
+
+Copy the example environment file:
+
+```powershell
 copy .env.example .env
 ```
 
-Edit `.env` and add your NVIDIA API key.
+Edit `.env` and add your NVIDIA API key:
 
-## Smoke test
+```env
+NVIDIA_API_KEY=your_key_here
+NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
+NVIDIA_LLM_MODEL=meta/llama-3.1-8b-instruct
+NVIDIA_EMBED_MODEL=nvidia/nv-embedqa-e5-v5
+```
+
+Do not commit the `.env` file.
+
+### 4. Test NVIDIA NIM connectivity
 
 ```powershell
 python smoke_test.py
 ```
 
-## Ingest a Document
+Expected result: the script prints a short response from the configured NVIDIA-hosted model.
 
-Put a Tamil or Hindi government PDF in `data/`, then run:
+### 5. Ingest a PDF
+
+Place a Tamil or Hindi government PDF inside the `data/` folder, then run:
 
 ```powershell
 python -m agent.ingest data\your-document.pdf
 ```
 
-## Ask a Question
+This extracts text, chunks it, creates embeddings through NVIDIA NIM, and stores a local FAISS index under `storage/`.
+
+### 6. Ask a question from the command line
 
 ```powershell
 python -m agent.agent "What is this document about?"
 ```
 
-## Run the Demo UI
+### 7. Run the browser demo
 
 ```powershell
 python app.py
 ```
 
-Then open the local Gradio URL shown in the terminal.
+Open the local Gradio URL shown in the terminal.
 
-## Startup Pitch Customization
+## Limitations
 
-### Sarvam AI
-
-Sarvam's opportunity is Indian-language document intelligence at enterprise and government scale. This demo can be positioned as a lightweight application layer on top of Indic models, with NVIDIA NIM, TensorRT-LLM, and Triton helping reduce inference latency and cost for production document workflows.
-
-### Gnani.ai
-
-Gnani focuses on multilingual voice AI for Indian enterprises. This demo can be adapted into a voice-enabled citizen service flow: a user asks a question by phone, the system retrieves an answer from a government document, and responds in the user's language. NVIDIA's pitch centers on low-latency ASR, LLM, and TTS inference.
-
-### AI4Bharat
-
-AI4Bharat's work on Indic datasets, OCR, and language resources fits the data and evaluation layer. This demo can use AI4Bharat-style datasets to benchmark retrieval and answer quality across Indian languages, while NVIDIA provides accelerated training and inference infrastructure.
+- The current version works best with text-based PDFs.
+- Scanned or image-only PDFs may fail because OCR is not included yet.
+- The FAISS vector index is stored locally and is intended for a single-user demo.
+- Ingesting a new document replaces the active local index.
+- The app requires internet access to call NVIDIA NIM endpoints.
+- External users need their own NVIDIA API key from build.nvidia.com.
+- Model availability may depend on the user's NVIDIA account access.
+- Answer quality depends on PDF text extraction quality, retrieval quality, and the selected NIM model.
+- The prototype does not yet include formal evaluation metrics for Tamil vs Hindi performance.
+- The first version uses a lightweight custom agent flow; AgentIQ integration is a recommended next step.
