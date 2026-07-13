@@ -1,6 +1,6 @@
-# Government Document Agent
+# Government Document Q&A
 
-Agentic RAG proof-of-concept for Indian government documents in Tamil and Hindi.
+RAG proof-of-concept for Indian government documents in Tamil and Hindi.
 
 The app ingests a PDF, chunks the extracted text, embeds it with NVIDIA NIM, stores the chunks in a local FAISS index, and answers questions using retrieved context.
 
